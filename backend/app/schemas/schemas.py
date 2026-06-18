@@ -40,8 +40,79 @@ class LogoutRequest(BaseModel):
     refresh_token: str
 
 
+# Profile Schemas
+class ProfileUpdateRequest(BaseModel):
+    username: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, v):
+        if v is not None:
+            v = v.strip()
+            if len(v) < 3:
+                raise ValueError("Username must be at least 3 characters")
+            if len(v) > 50:
+                raise ValueError("Username must be at most 50 characters")
+            if not re.match(r'^[a-zA-Z0-9_]+$', v):
+                raise ValueError("Username can only contain letters, numbers and underscores")
+        return v
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v):
+        if v is not None and len(v) < 6:
+            raise ValueError("Password must be at least 6 characters")
+        return v
+
+
+class ProfileResponse(BaseModel):
+    id: str
+    username: str
+    email: str
+    has_profile_photo: bool
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 # Invoice Schemas
-VALID_BANKS = ["SBI", "HDFC", "ICICI", "AXIS", "PNB", "BOB", "CANARA", "UNION", "IOB", "IDBI"]
+VALID_BANKS = [
+    'Federal Bank',
+    'IndusInd Bank',
+    'DCB Bank',
+    'Chola Mandalam',
+    'SMFG Financial Services',
+    'ICICI Bank',
+    'Axis Bank',
+    'IDFC First Bank',
+    'HDFC Bank',
+    'Yes Bank',
+    'State Bank of India',
+    'Kotak Mahindra',
+    'HDB Financial Services',
+    'Sundaram Finance',
+    'Punjab National Bank',
+    'Poonawalla Fincorp',
+    'REPCO Home Finance',
+    'Parimal Finance',
+    'Aditya Birla Finance',
+    'Equitas',
+    'TRU Homes',
+    'HomeFirst',
+    'Piramal Finance',
+    'PNG Housing Finance',
+    'Bajaj Finance',
+    'L&T Finance',
+    'Tata Capital',
+    'Godrej Finance',
+    'Jana Small Finance Bank',
+    'Jayam Finance',
+]
 
 
 class InvoiceCreate(BaseModel):
@@ -61,7 +132,7 @@ class InvoiceCreate(BaseModel):
     @classmethod
     def validate_loan_requested(cls, v):
         if v <= 0:
-            raise ValueError("Loan requested amount must be positive")
+            raise ValueError("Invoice amount must be positive")
         return v
 
     @field_validator("loan_sanctioned_amount")
@@ -89,7 +160,7 @@ class InvoiceUpdate(BaseModel):
     @classmethod
     def validate_loan_requested(cls, v):
         if v is not None and v <= 0:
-            raise ValueError("Loan requested amount must be positive")
+            raise ValueError("Invoice amount must be positive")
         return v
 
     @field_validator("loan_sanctioned_amount")
@@ -221,3 +292,9 @@ class LoanComparison(BaseModel):
     month: str
     loan_requested: Decimal
     loan_sanctioned: Decimal
+
+
+class UpcomingInvoiceNumber(BaseModel):
+    next_invoice_number: str
+    financial_year: str
+    next_serial: int

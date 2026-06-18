@@ -94,7 +94,7 @@ export default function InvoiceFormModal({ invoice, onClose, onSuccess }: Props)
           </div>
 
           <div>
-            <label className="label">Loan Requested Amount (₹) <span className="text-red-400">*</span></label>
+            <label className="label">Invoice Amount (₹) <span className="text-red-400">*</span></label>
             <input type="number" step="0.01" min="0.01" {...register('loan_requested_amount')} className="input" placeholder="e.g. 500000" />
             {errors.loan_requested_amount && <p className="text-red-400 text-xs mt-1">{errors.loan_requested_amount.message}</p>}
           </div>

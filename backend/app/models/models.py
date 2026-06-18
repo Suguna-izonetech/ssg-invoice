@@ -20,6 +20,8 @@ class AdminUser(Base):
     username = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
     hashed_password = Column(String(255), nullable=False)
+    profile_photo = Column(LargeBinary, nullable=True)
+    profile_photo_content_type = Column(String(100), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -42,7 +44,7 @@ class Invoice(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    uploaded_file = relationship("UploadedFile", back_populates="invoice", uselist=False, cascade="all, delete-orphan",lazy="selectin")
+    uploaded_file = relationship("UploadedFile", back_populates="invoice", uselist=False, cascade="all, delete-orphan", lazy="selectin")
 
     __table_args__ = (
         Index("ix_invoices_bank_date", "bank_name", "invoice_date"),
@@ -62,7 +64,7 @@ class UploadedFile(Base):
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    invoice = relationship("Invoice", back_populates="uploaded_file",lazy="selectin")
+    invoice = relationship("Invoice", back_populates="uploaded_file", lazy="selectin")
 
 
 class RefreshToken(Base):

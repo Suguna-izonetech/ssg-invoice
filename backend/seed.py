@@ -19,7 +19,12 @@ async def seed():
 
     async with SessionLocal() as db:
         # Check if admin exists
-        result = await db.execute(select(AdminUser).where(AdminUser.username == settings.ADMIN_USERNAME))
+        result = await db.execute(
+    select(AdminUser).where(
+        (AdminUser.username == settings.ADMIN_USERNAME) |
+        (AdminUser.email == settings.ADMIN_EMAIL)
+    )
+)
         existing = result.scalar_one_or_none()
 
         if not existing:

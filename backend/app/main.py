@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.middleware.security import SecurityHeadersMiddleware, RateLimitMiddleware
 from app.routers import auth, dashboard, invoices, sessions
+from app.routers import profile
 
 
 @asynccontextmanager
@@ -35,6 +36,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware)
 
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(profile.router, prefix="/api/profile", tags=["Profile"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(invoices.router, prefix="/api/invoices", tags=["Invoices"])
 app.include_router(sessions.router, prefix="/api/sessions", tags=["Sessions"])

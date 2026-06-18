@@ -103,5 +103,52 @@ export interface Session {
   is_active: boolean
 }
 
-export const BANKS = ['SBI', 'HDFC', 'ICICI', 'AXIS', 'PNB', 'BOB', 'CANARA', 'UNION', 'IOB', 'IDBI'] as const
+export interface ProfileResponse {
+  id: string
+  username: string
+  email: string
+  has_profile_photo: boolean
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface UpcomingInvoiceNumber {
+  next_invoice_number: string
+  financial_year: string
+  next_serial: number
+}
+
+export const BANKS = [
+  'Federal Bank',
+  'IndusInd Bank',
+  'DCB Bank',
+  'Chola Mandalam',
+  'SMFG Financial Services',
+  'ICICI Bank',
+  'Axis Bank',
+  'IDFC First Bank',
+  'HDFC Bank',
+  'Yes Bank',
+  'State Bank of India',
+  'Kotak Mahindra',
+  'HDB Financial Services',
+  'Sundaram Finance',
+  'Punjab National Bank',
+  'Poonawalla Fincorp',
+  'REPCO Home Finance',
+  'Parimal Finance',
+  'Aditya Birla Finance',
+  'Equitas',
+  'TRU Homes',
+  'HomeFirst',
+  'Piramal Finance',
+  'PNG Housing Finance',
+  'Bajaj Finance',
+  'L&T Finance',
+  'Tata Capital',
+  'Godrej Finance',
+  'Jana Small Finance Bank',
+  'Jayam Finance',
+] as const
 export type BankName = typeof BANKS[number]

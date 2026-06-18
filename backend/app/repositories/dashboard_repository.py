@@ -4,12 +4,17 @@ from datetime import datetime, timezone, timedelta
 from typing import List
 from decimal import Decimal
 
-from app.models.models import Invoice, ActiveSession
+from app.models.models import Invoice, ActiveSession, InvoiceSequence
 
 
 class DashboardRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
+
+    def _get_financial_year(self, date: datetime) -> str:
+        if date.month >= 4:
+            return f"{str(date.year)[2:]}-{str(date.year + 1)[2:]}"
+        return f"{str(date.year - 1)[2:]}-{str(date.year)[2:]}"
 
     async def get_stats(self) -> dict:
         now = datetime.now(timezone.utc)
@@ -132,24 +137,31 @@ class DashboardRepository:
 
     async def get_recent_invoices(self, limit: int = 5):
         from sqlalchemy.orm import selectinload
-        now = datetime.now(timezone.utc)
         result = await self.db.execute(
             select(Invoice)
             .options(selectinload(Invoice.uploaded_file))
-            .where(Invoice.invoice_date <= now)
-            .order_by(Invoice.invoice_date.desc())
+            .order_by(Invoice.created_at.desc())
             .limit(limit)
         )
         return result.scalars().all()
 
-    async def get_upcoming_invoices(self, limit: int = 5):
-        from sqlalchemy.orm import selectinload
+    async def get_upcoming_invoice_number(self) -> dict:
+        """Calculate the next invoice number that would be generated."""
         now = datetime.now(timezone.utc)
+        financial_year = self._get_financial_year(now)
+
+        # Get the current sequence for this financial year
         result = await self.db.execute(
-            select(Invoice)
-            .options(selectinload(Invoice.uploaded_file))
-            .where(Invoice.invoice_date > now)
-            .order_by(Invoice.invoice_date.asc())
-            .limit(limit)
+            select(InvoiceSequence).where(InvoiceSequence.financial_year == financial_year)
         )
-        return result.scalars().all()
+        seq = result.scalar_one_or_none()
+
+        current_last = seq.last_sequence if seq else 0
+        next_serial = current_last + 1
+        next_invoice_number = f"SSG/{financial_year}/{str(next_serial).zfill(5)}"
+
+        return {
+            "next_invoice_number": next_invoice_number,
+            "financial_year": financial_year,
+            "next_serial": next_serial,
+        }

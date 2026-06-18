@@ -161,7 +161,7 @@ class InvoiceService:
         writer = csv.writer(output)
         writer.writerow([
             "Invoice Number", "Serial Number", "Financial Year", "Bank Name",
-            "Invoice Date", "Loan Requested Amount", "Loan Sanctioned Amount",
+            "Invoice Date", "Invoice Amount", "Loan Sanctioned Amount",
             "Has File", "Created At"
         ])
         for inv in items:
@@ -186,7 +186,7 @@ class InvoiceService:
 
         headers = [
             "Invoice Number", "Serial Number", "Financial Year", "Bank Name",
-            "Invoice Date", "Loan Requested (₹)", "Loan Sanctioned (₹)",
+            "Invoice Date", "Invoice Amount (₹)", "Loan Sanctioned (₹)",
             "Has File", "Created At"
         ]
         header_fill = PatternFill(start_color="1E3A5F", end_color="1E3A5F", fill_type="solid")

@@ -1,20 +1,30 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
-  LayoutDashboard, FileText, Monitor, LogOut, Menu, X, Receipt, ChevronRight
+  LayoutDashboard, FileText, Monitor, LogOut, Menu, X, Receipt, UserCircle
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import { profileService } from '../../services/profileService'
 import toast from 'react-hot-toast'
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/invoices', icon: FileText, label: 'Invoices' },
   { to: '/sessions', icon: Monitor, label: 'Active Devices' },
+  { to: '/profile', icon: UserCircle, label: 'Profile' },
 ]
 
 export default function AppLayout() {
   const { user, logout } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [photoTimestamp, setPhotoTimestamp] = useState(Date.now())
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: profileService.getProfile,
+    staleTime: 60000,
+  })
 
   const handleLogout = async () => {
     try {
@@ -24,6 +34,10 @@ export default function AppLayout() {
       toast.error('Logout failed')
     }
   }
+
+  const photoUrl = profile?.has_profile_photo
+    ? `${profileService.getPhotoUrl()}?t=${photoTimestamp}`
+    : null
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -61,15 +75,27 @@ export default function AppLayout() {
 
       {/* User */}
       <div className="px-3 py-4 border-t border-slate-800">
-        <div className="flex items-center gap-3 px-3 py-2 mb-2">
-          <div className="w-8 h-8 bg-blue-600/20 border border-blue-500/30 rounded-full flex items-center justify-center">
-            <span className="text-blue-400 text-xs font-bold uppercase">{user?.username[0]}</span>
+        <NavLink
+          to="/profile"
+          onClick={() => setSidebarOpen(false)}
+          className="flex items-center gap-3 px-3 py-2 mb-2 rounded-lg hover:bg-slate-800 transition-all group"
+        >
+          <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+            {photoUrl ? (
+              <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center">
+                <span className="text-blue-400 text-xs font-bold uppercase">
+                  {profile?.username?.[0] ?? user?.username?.[0]}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-200 truncate">{user?.username}</p>
+            <p className="text-sm font-medium text-slate-200 truncate">{profile?.username ?? user?.username}</p>
             <p className="text-xs text-slate-500 truncate">{user?.email}</p>
           </div>
-        </div>
+        </NavLink>
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-red-900/30 hover:text-red-400 transition-all"

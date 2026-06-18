@@ -1,5 +1,5 @@
 import api from './api'
-import type { DashboardStats, MonthlyTrend, WeeklyTrend, BankDistribution, LoanComparison, Invoice } from '../types'
+import type { DashboardStats, MonthlyTrend, WeeklyTrend, BankDistribution, LoanComparison, Invoice, UpcomingInvoiceNumber } from '../types'
 
 export const dashboardService = {
   async getStats(): Promise<DashboardStats> {
@@ -26,8 +26,8 @@ export const dashboardService = {
     const { data } = await api.get<Invoice[]>('/dashboard/recent-invoices')
     return data
   },
-  async getUpcomingInvoices(): Promise<Invoice[]> {
-    const { data } = await api.get<Invoice[]>('/dashboard/upcoming-invoices')
+  async getUpcomingInvoiceNumber(): Promise<UpcomingInvoiceNumber> {
+    const { data } = await api.get<UpcomingInvoiceNumber>('/dashboard/upcoming-invoice-number')
     return data
   },
 }

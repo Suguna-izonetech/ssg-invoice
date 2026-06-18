@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.security.dependencies import get_current_user
 from app.models.models import AdminUser
 from app.repositories.dashboard_repository import DashboardRepository
-from app.schemas.schemas import InvoiceResponse
+from app.schemas.schemas import InvoiceResponse, UpcomingInvoiceNumber
 
 router = APIRouter()
 
@@ -65,11 +65,10 @@ async def get_recent_invoices(
     return [InvoiceResponse.model_validate(i) for i in items]
 
 
-@router.get("/upcoming-invoices")
-async def get_upcoming_invoices(
+@router.get("/upcoming-invoice-number", response_model=UpcomingInvoiceNumber)
+async def get_upcoming_invoice_number(
     current_user: AdminUser = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
     repo = DashboardRepository(db)
-    items = await repo.get_upcoming_invoices(limit=10)
-    return [InvoiceResponse.model_validate(i) for i in items]
+    return await repo.get_upcoming_invoice_number()

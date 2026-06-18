@@ -109,20 +109,26 @@ export default function InvoicesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
             <input
               type="text"
-              placeholder="Search invoice number, bank..."
+              placeholder="Search invoice number or bank name..."
               className="input pl-9 text-sm"
               value={filters.search || ''}
               onChange={e => setFilter('search', e.target.value)}
             />
           </div>
-          <select
-            className="input text-sm w-40"
-            value={filters.bank_name || ''}
-            onChange={e => setFilter('bank_name', e.target.value)}
-          >
-            <option value="">All Banks</option>
-            {BANKS.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
+          <div className="relative w-40">
+            <input
+              list="bank-options"
+              className="input text-sm w-full"
+              placeholder="Search/select bank from list"
+              value={filters.bank_name || ''}
+              onChange={e => setFilter('bank_name', e.target.value)}
+              aria-label="Search or select bank from updated bank list"
+            />
+            <datalist id="bank-options">
+              <option value="" />
+              {BANKS.map(b => <option key={b} value={b}>{b}</option>)}
+            </datalist>
+          </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`btn-secondary flex items-center gap-2 text-sm relative ${showFilters ? 'ring-2 ring-blue-500' : ''}`}
@@ -152,11 +158,11 @@ export default function InvoicesPage() {
               <input type="date" className="input text-sm" value={filters.date_to || ''} onChange={e => setFilter('date_to', e.target.value)} />
             </div>
             <div>
-              <label className="label text-xs">Loan Requested Min (₹)</label>
+              <label className="label text-xs">Invoice Amount Min (₹)</label>
               <input type="number" className="input text-sm" placeholder="0" value={filters.loan_requested_min || ''} onChange={e => setFilter('loan_requested_min', e.target.value ? Number(e.target.value) : undefined)} />
             </div>
             <div>
-              <label className="label text-xs">Loan Requested Max (₹)</label>
+              <label className="label text-xs">Invoice Amount Max (₹)</label>
               <input type="number" className="input text-sm" placeholder="Any" value={filters.loan_requested_max || ''} onChange={e => setFilter('loan_requested_max', e.target.value ? Number(e.target.value) : undefined)} />
             </div>
             <div>
@@ -188,7 +194,7 @@ export default function InvoicesPage() {
                   <span className="flex items-center gap-1">Date <SortIcon field="invoice_date" current={filters.sort_by!} order={filters.sort_order!} /></span>
                 </th>
                 <th className="table-header text-right cursor-pointer hover:text-slate-200" onClick={() => setSort('loan_requested_amount')}>
-                  <span className="flex items-center justify-end gap-1">Loan Requested <SortIcon field="loan_requested_amount" current={filters.sort_by!} order={filters.sort_order!} /></span>
+                  <span className="flex items-center justify-end gap-1">Invoice Amount <SortIcon field="loan_requested_amount" current={filters.sort_by!} order={filters.sort_order!} /></span>
                 </th>
                 <th className="table-header text-right cursor-pointer hover:text-slate-200" onClick={() => setSort('loan_sanctioned_amount')}>
                   <span className="flex items-center justify-end gap-1">Loan Sanctioned <SortIcon field="loan_sanctioned_amount" current={filters.sort_by!} order={filters.sort_order!} /></span>
